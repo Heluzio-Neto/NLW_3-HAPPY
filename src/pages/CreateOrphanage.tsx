@@ -2,12 +2,13 @@ import React, { useState, FormEvent, ChangeEvent} from "react";
 import { Map, Marker, TileLayer } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
 import {  FiPlus } from "react-icons/fi";
+import { useHistory } from "react-router-dom";
 
 import '../style/pages/create-orphanage.css'
 import Sidebar from "../components/Sidebar";
 import mapIcon from "../utils/mapIcons";
 import api from "../services/api";
-import { useHistory } from "react-router-dom";
+
 
 export default function CreateOrphanage() {
   const history = useHistory();
@@ -31,7 +32,7 @@ export default function CreateOrphanage() {
     });
   }
 
-function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
+function handleSelectImages( event: ChangeEvent<HTMLInputElement>) {
   if (!event.target.files){
     return;
   }
@@ -46,6 +47,16 @@ function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
  }
 
   async function handleSubmit(event: FormEvent){
+    console.log({
+      position,
+      name,
+      about,
+      instructions,
+      opening_hours, 
+      open_on_weekends
+
+    });
+
     event.preventDefault(); 
 
     const { latitude, longitude} = position;
@@ -57,7 +68,7 @@ function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
     data.append('latitude', String(latitude));
     data.append('longitude', String(longitude));
     data.append('instructions', instructions);
-    data.append('pening_hours', opening_hours);
+    data.append('opening_hours', opening_hours);
     data.append('open_on_weekends', String(open_on_weekends));
 
     images.forEach(image => {
@@ -66,10 +77,10 @@ function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
 
     await api.post('orphanages', data);
 
-    alert('Cadastro Realizado com sucesso!!');
-    history.push('/app');
-    }
+    alert('cadastro realizado com sucesso!');
 
+    history.push('/app');
+  }
   return (
     <div id="page-create-orphanage">
         <Sidebar />
@@ -123,6 +134,7 @@ function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
               <label htmlFor="images">Fotos</label>
 
               <div className="images-container">
+
               {previewImages.map(image => {
                 return(
                   <img  key={image} src={image} alt={name} />
@@ -135,7 +147,7 @@ function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
 
               </div>
 
-              <input type="file" id="image[]"/>
+              <input multiple onChange={handleSelectImages} type="file" id="image[]"/>
 
             </div>
           </fieldset>
